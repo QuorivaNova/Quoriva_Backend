@@ -8,7 +8,7 @@ jobs:
     timeout-minutes: 10
     services:
       postgres:
-        image: public.ecr.aws/docker/library/postgres:18-bookworm@sha256:bbf83594798e144bff365a9c191c5d779f181fb3135902064ab8ff11918020fc
+        image: postgres:18-bookworm@sha256:bbf83594798e144bff365a9c191c5d779f181fb3135902064ab8ff11918020fc
         env:
           POSTGRES_USER: quoriva
           POSTGRES_PASSWORD: quoriva_ci_only
