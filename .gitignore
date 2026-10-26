@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.log
+*.test
+*.exe
+*.out
+coverage/
+bin/
+.local/
+.DS_Store
+Thumbs.db
+.idea/

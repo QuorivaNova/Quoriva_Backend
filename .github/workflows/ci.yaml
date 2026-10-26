@@ -1,0 +1,36 @@
+name: Backend checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: public.ecr.aws/docker/library/postgres:18-bookworm@sha256:bbf83594798e144bff365a9c191c5d779f181fb3135902064ab8ff11918020fc
+        env:
+          POSTGRES_USER: quoriva
+          POSTGRES_PASSWORD: quoriva_ci_only
+          POSTGRES_DB: quoriva_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -h 127.0.0.1 -U quoriva -d quoriva_test"
+          --health-interval 2s
+          --health-timeout 2s
+          --health-retries 30
+    env:
+      TEST_DATABASE_URL: postgres://quoriva:quoriva_ci_only@localhost:5432/quoriva_test?sslmode=disable&connect_timeout=2
+      REQUIRE_DATABASE_TESTS: '1'
+      CGO_ENABLED: '1'
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Check formatting
+        run: test -z "$(gofmt -l cmd internal migrations)"
+      - run: go vet ./...
+      - run: go test -race -count=1 -v ./...
